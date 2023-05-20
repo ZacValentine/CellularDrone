@@ -35,7 +35,8 @@ leftMotor = motor(27, 17, 22)
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('192.168.1.17', 1234))
+s.connect(('100.80.57.27', 5000))
+print("connection")
 while True:
     msg = s.recv(16)
     data = msg.decode("utf-8")

@@ -40,24 +40,25 @@ print("connection")
 while True:
     msg = s.recv(16)
     data = msg.decode("utf-8")
+    data = data[0]
     print(data)
     
-    if(data == "f"):
+    if(data == "w"):
         leftMotor.forward(100)
         rightMotor.forward(100)
-    elif(data == "b"):
+    elif(data == "s"):
         leftMotor.backward(100)
         rightMotor.backward(100)
-    elif(data == "r"):
+    elif(data == "d"):
         leftMotor.forward(100)
         rightMotor.stop()
-    elif(data == "l"):
-        rightMotor.foward(100)
+    elif(data == "a"):
+        rightMotor.forward(100)
         leftMotor.stop()
-    elif(data == "s"):
-        leftMotor.stop()
-        rightMotor.stop()
-    else:
+    elif(data == "x"):
         leftMotor.stop()
         rightMotor.stop()
+    #else:
+      #  leftMotor.stop()
+       # rightMotor.stop()
     

@@ -2,6 +2,7 @@ import cv2, imutils, socket
 import numpy as np
 import time
 import base64
+#from PIL import ImageEnhance, Image
 
 BUFF_SIZE = 65536
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -23,7 +24,7 @@ while True:
     WIDTH = 400
     while(vid.isOpened()):
         _, frame = vid.read()
-        frame = imutils.resize(frame, width = WIDTH)
+        frame = imutils.resize(frame, width = WIDTH) 
         encoded, buffer=  cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
         message = base64.b64encode(buffer)
         server_socket.sendto(message, client_addr)

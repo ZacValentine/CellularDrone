@@ -2,12 +2,13 @@ import cv2, imutils, socket
 import numpy as np
 import time
 import base64
+from PIL import ImageEnhance, Image
 
 BUFF_SIZE = 65536
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
 host_name = socket.gethostname()
-host_ip = '100.80.57.27'
+host_ip = '100.110.162.27'
 port = 5000
 message = b'hello'
 
@@ -18,7 +19,18 @@ while True:
     data = base64.b64decode(packet, ' /')
     npdata = np.frombuffer(data, dtype = np.uint8)
     frame = cv2.imdecode(npdata, 1)
-    cv2.imshow("RECIEVING VIDEO", frame)
+
+    # modify frame here
+    factor = 0.5
+
+    img = Image.fromarray(frame)
+    brightnessEnhancer = ImageEnhance.Brightness(img)
+    output = brightnessEnhancer.enhance(factor)
+    contrastEnhancer = ImageEnhance.Contrast(output)
+    output = contrastEnhancer.enhance(factor)
+    output = np.asarray(output)
+
+    cv2.imshow("RECIEVING VIDEO", output)
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         client_socket.close()

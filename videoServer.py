@@ -7,8 +7,8 @@ BUFF_SIZE = 65536
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
 host_name = socket.gethostname()
-host_ip = '192.168.1.17'
-port = 1234
+host_ip = '100.80.57.27'
+port = 5000
 socket_address = (host_ip, port)
 server_socket.bind(socket_address)
 print('listening at: ', socket_address)

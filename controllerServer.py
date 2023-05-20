@@ -28,10 +28,10 @@ for i in range(pygame.joystick.get_count()):
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((socket.gethostname(), 1234))
+s.bind((socket.gethostname(), 5000))
 s.listen(5)
 
-print(pygame.joystick.Joystick(1).get_name())
+#print(pygame.joystick.Joystick(1).get_name())
 while True:
     clientsocket, address = s.accept()
     print(f"connection from {address} has been established")
@@ -39,14 +39,14 @@ while True:
     while True:
         for event in pygame.event.get():
             if event.type == pygame.JOYAXISMOTION:
-                if (pygame.joystick.Joystick(1).get_axis(1) > 0.1):
-                    message = str(pygame.joystick.Joystick(1).get_axis(1) * 100)
+                if (pygame.joystick.Joystick(0).get_axis(1) > 0.1):
+                    message = str(pygame.joystick.Joystick(0).get_axis(1) * 100)
                     message = message[0:4]
                     print(message)
                     message1 = message
                    # clientsocket.send(bytes(message, "utf-8"))
-                elif(pygame.joystick.Joystick(1).get_axis(1) < 0.1):
-                    message = str(pygame.joystick.Joystick(1).get_axis(1) * 100)
+                elif(pygame.joystick.Joystick(0).get_axis(1) < 0.1):
+                    message = str(pygame.joystick.Joystick(0).get_axis(1) * 100)
                     message = message[0:4]
                     print(message)
                     message1 = message
@@ -56,14 +56,14 @@ while True:
                     print(message)
                     message1 = message
                     #clientsocket.send(bytes(message, "utf-8"))
-                if (pygame.joystick.Joystick(1).get_axis(3) > 0.1):
-                    message = str(pygame.joystick.Joystick(1).get_axis(3) * 100)
+                if (pygame.joystick.Joystick(0).get_axis(3) > 0.1):
+                    message = str(pygame.joystick.Joystick(0).get_axis(3) * 100)
                     message = message[0:4]
                     print(message)
                     message2 = message
                     #clientsocket.send(bytes(message, "utf-8"))
-                elif(pygame.joystick.Joystick(1).get_axis(3) < -0.1):
-                    message = str(pygame.joystick.Joystick(1).get_axis(3) * 100)
+                elif(pygame.joystick.Joystick(0).get_axis(3) < -0.1):
+                    message = str(pygame.joystick.Joystick(0).get_axis(3) * 100)
                     message = message[0:4]
                     print(message)
                     message2 = message

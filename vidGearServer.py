@@ -1,45 +1,43 @@
 # import libraries
-from vidgear.gears import WriteGear
-import cv2
+from vidgear.gears import VideoGear
+from vidgear.gears import NetGear
+from vidgear.gears import CamGear
 
-output_params = {"-vcodec": "libx264", "-crf": 0,
-                 "-preset": "fast"}  # define (Codec,CRF,preset) FFmpeg tweak parameters for writer
+options = {"flag": 0, "copy": False, "track": False}
 
-stream = cv2.VideoCapture(0)  # Open live webcam video stream on first index(i.e. 0) device
+#stream = VideoGear(source='test.mp4').start()  # Open any video stream
+stream = CamGear(source=0).start()
 
-writer = WriteGear(output='Output.mp4', compression_mode=True, logging=True,
-                   **output_params)  # Define writer with output filename 'Output.mp4'
+server = NetGear(
+    address="100.80.57.27",
+    port="5000",
+    protocol="tcp",
+    pattern=1,
+    logging=True,
+    **options
+)
 
-# infinite loop
+# infinite loop until [Ctrl+C] is pressed
 while True:
+    try:
+        frame = stream.read()
+        # read frames
 
-    (grabbed, frame) = stream.read()
-    # read frames
+        # check if frame is None
+        if frame is None:
+            # if True break the infinite loop
+            break
 
-    # check if frame empty
-    if not grabbed:
-        # if True break the infinite loop
+        # do something with frame here
+
+        # send frame to server
+        server.send(frame)
+
+    except KeyboardInterrupt:
+        # break the infinite loop
         break
 
-    # {do something with frame here}
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # write a modified frame to writer
-    writer.write(gray)
-
-    # Show output window
-    cv2.imshow("Output Frame", frame)
-
-    key = cv2.waitKey(1) & 0xFF
-    # check for 'q' key-press
-    if key == ord("q"):
-        # if 'q' key-pressed break out
-        break
-
-cv2.destroyAllWindows()
-# close output window
-
-stream.release()
 # safely close video stream
+stream.stop()
+# safely close server
 writer.close()
-# safely close writer

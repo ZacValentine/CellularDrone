@@ -2,12 +2,15 @@
 from vidgear.gears import VideoGear
 from vidgear.gears import NetGear
 from vidgear.gears import CamGear
+import cv2
+
+options = {
+    "STREAM_RESOLUTION": '240p',  # '240p'
+}
+stream = VideoGear(source=0, **options).start()
+#stream = CamGear(
 
 options = {"flag": 0, "copy": False, "track": False}
-
-#stream = VideoGear(source='test.mp4').start()  # Open any video stream
-stream = CamGear(source=0).start()
-
 server = NetGear(
     address="100.80.57.27",
     port="5000",
@@ -16,6 +19,7 @@ server = NetGear(
     logging=True,
     **options
 )
+
 
 # infinite loop until [Ctrl+C] is pressed
 while True:
@@ -28,8 +32,6 @@ while True:
             # if True break the infinite loop
             break
 
-        # do something with frame here
-
         # send frame to server
         server.send(frame)
 
@@ -39,5 +41,3 @@ while True:
 
 # safely close video stream
 stream.stop()
-# safely close server
-writer.close()

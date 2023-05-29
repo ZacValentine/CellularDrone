@@ -10,12 +10,17 @@ options = {
 stream = VideoGear(source=0, **options).start()
 #stream = CamGear(
 
-options = {"flag": 0, "copy": False, "track": False}
+options = {
+    "frame_size_reduction": 40,
+    "compression_param": cv2.IMWRITE_JPEG_QUALITY,
+    "compression_value": 80,
+}
+
 server = NetGear(
     address="100.80.57.27",
     port="5000",
     protocol="tcp",
-    pattern=1,
+    pattern=0,
     logging=True,
     **options
 )

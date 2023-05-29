@@ -2,7 +2,9 @@
 from vidgear.gears import NetGear
 import cv2
 
-options = {"flag": 0, "copy": False, "track": False}
+options = {
+    "compression_param": cv2.IMREAD_COLOR,
+}
 
 # Define Netgear Client at given IP address and define parameters
 # !!! change following IP address '192.168.x.xxx' with yours !!!
@@ -10,7 +12,7 @@ client = NetGear(
     address="100.80.57.27",
     port="5000",
     protocol="tcp",
-    pattern=1,
+    pattern=0,
     receive_mode=True,
     logging=True,
     **options

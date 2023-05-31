@@ -35,6 +35,13 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('100.80.57.27', 5000))
 print("Connection established")
 
+key_state = {
+    'w': False,
+    's': False,
+    'd': False,
+    'a': False
+}
+
 while True:
     data = s.recv(16)
     if not data:
@@ -45,19 +52,29 @@ while True:
     print(message)
 
     if message == "w":
+        key_state['w'] = True
+    elif message == "s":
+        key_state['s'] = True
+    elif message == "d":
+        key_state['d'] = True
+    elif message == "a":
+        key_state['a'] = True
+    elif message == "x":
+        key_state = {
+            'w': False,
+            's': False,
+            'd': False,
+            'a': False
+        }
+
+    if not key_state['w'] and not key_state['s']:
+        leftMotor.stop()
+        rightMotor.stop()
+    elif key_state['w']:
         leftMotor.forward(100)
         rightMotor.forward(100)
-    elif message == "s":
+    elif key_state['s']:
         leftMotor.backward(100)
         rightMotor.backward(100)
-    elif message == "d":
-        leftMotor.forward(100)
-        rightMotor.stop()
-    elif message == "a":
-        rightMotor.forward(100)
-        leftMotor.stop()
-    elif message == "x":
-        leftMotor.stop()
-        rightMotor.stop()
 
 s.close()

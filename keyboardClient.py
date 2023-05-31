@@ -35,7 +35,7 @@ leftMotor = motor(27, 17, 22)
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('100.80.57.27', 5000))
+s.connect(('100.80.57.27', 5001))
 print("connection")
 while True:
     msg = s.recv(16)
@@ -44,21 +44,19 @@ while True:
     print(data)
     
     if(data == "w"):
-        leftMotor.forward(100)
-        rightMotor.forward(100)
+       leftMotor.forward(100)
+       rightMotor.forward(100)
     elif(data == "s"):
-        leftMotor.backward(100)
-        rightMotor.backward(100)
+       leftMotor.backward(100)
+       rightMotor.backward(100)
     elif(data == "d"):
-        leftMotor.forward(100)
-        rightMotor.stop()
+       leftMotor.forward(100)
+       rightMotor.stop()
     elif(data == "a"):
-        rightMotor.forward(100)
-        leftMotor.stop()
+       rightMotor.forward(100)
+       leftMotor.stop()
     elif(data == "x"):
         leftMotor.stop()
         rightMotor.stop()
-    #else:
-      #  leftMotor.stop()
-       # rightMotor.stop()
+
     

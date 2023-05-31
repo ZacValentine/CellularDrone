@@ -1,11 +1,9 @@
 import socket
 import keyboard
-import select
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((socket.gethostname(), 5000))
 s.listen(5)
-s.setblocking(0)
 
 lastKeyPress = ""
 
@@ -13,28 +11,36 @@ while True:
     clientsocket, address = s.accept()
     print(f"Connection from {address} has been established")
 
+    # Set the client socket to non-blocking mode
+    clientsocket.setblocking(0)
+
     while True:
-        ready_to_read, _, _ = select.select([clientsocket], [], [], 0)
+        try:
+            data = clientsocket.recv(16)
+            if data:
+                message = data.decode("utf-8")
+                message = message[0]
+                print(message)
 
-        if ready_to_read:
-            client_data = clientsocket.recv(1024)
-            if not client_data:
-                break
-            print("Received data from the client:", client_data.decode("utf-8"))
+                if message == "w":
+                    # Perform action for 'w' key
+                    pass
+                elif message == "s":
+                    # Perform action for 's' key
+                    pass
+                elif message == "d":
+                    # Perform action for 'd' key
+                    pass
+                elif message == "a":
+                    # Perform action for 'a' key
+                    pass
+                elif message == "x":
+                    # Perform action for 'x' key
+                    pass
 
-        if keyboard.is_pressed('w'):
-            message = "w"
-        elif keyboard.is_pressed('s'):
-            message = "s"
-        elif keyboard.is_pressed('d'):
-            message = "d"
-        elif keyboard.is_pressed('a'):
-            message = "a"
-        else:
-            message = "x"
+                lastKeyPress = message
 
-        if message != lastKeyPress:
-            clientsocket.send(bytes(message, "utf-8"))
-            lastKeyPress = message
+        except BlockingIOError:
+            pass
 
-clientsocket.close()
+s.close()

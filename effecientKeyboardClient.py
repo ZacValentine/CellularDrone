@@ -34,30 +34,35 @@ leftMotor = Motor(27, 17, 22)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(('100.80.57.27', 5000))
+s.setblocking(0)
 print("Connection established")
 
 while True:
-    if keyboard.is_pressed('w'):
-        message = "w"
-        leftMotor.forward(100)
-        rightMotor.forward(100)
-    elif keyboard.is_pressed('s'):
-        message = "s"
-        leftMotor.backward(100)
-        rightMotor.backward(100)
-    elif keyboard.is_pressed('d'):
-        message = "d"
-        leftMotor.forward(100)
-        rightMotor.stop()
-    elif keyboard.is_pressed('a'):
-        message = "a"
-        rightMotor.forward(100)
-        leftMotor.stop()
-    else:
-        message = "x"
-        leftMotor.stop()
-        rightMotor.stop()
+    try:
+        if keyboard.is_pressed('w'):
+            message = "w"
+            leftMotor.forward(100)
+            rightMotor.forward(100)
+        elif keyboard.is_pressed('s'):
+            message = "s"
+            leftMotor.backward(100)
+            rightMotor.backward(100)
+        elif keyboard.is_pressed('d'):
+            message = "d"
+            leftMotor.forward(100)
+            rightMotor.stop()
+        elif keyboard.is_pressed('a'):
+            message = "a"
+            rightMotor.forward(100)
+            leftMotor.stop()
+        else:
+            message = "x"
+            leftMotor.stop()
+            rightMotor.stop()
 
-    s.send(bytes(message, "utf-8"))
+        s.send(bytes(message, "utf-8"))
+
+    except BlockingIOError:
+        pass
 
 s.close()

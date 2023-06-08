@@ -5,45 +5,41 @@ import numpy as np
 import base64
 import zlib
 from PIL import Image, ImageEnhance
+import keyboard
 
 BUFF_SIZE = 65536
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
 host_ip = '100.80.57.27'
 port = 5000
-message = b'hello'
 
-client_socket.sendto(message, (host_ip, port))
+# send msg so server has client addr
+client_socket.sendto(b'', (host_ip, port))
 
 while True:
+    # recv packet
     packet, _ = client_socket.recvfrom(BUFF_SIZE)
-
-    # Split the packet into header and data
-    header, data = packet.decode().split('|', 1)
-
-    # Process the header for keyboard information
-    # For example, if the header format is "KEYS:w,s,d,a"
-    keys = header.split(':')[1].split(',')
-
-    # Process the keyboard information as desired
-    # For example, you can print the keys list
-    print("Keyboard Info:", keys)
-
+    # decode
+    data = packet.decode()
     decoded_data = base64.b64decode(data)
+    # decompress
     decompressed_data = zlib.decompress(decoded_data)
-
+    # prep frame for modification
     npdata = np.frombuffer(decompressed_data, dtype=np.uint8)
     frame = cv2.imdecode(npdata, cv2.IMREAD_COLOR)
+    # modify frame here
 
-    # Modify frame here (e.g., image enhancement)
-    factor = 1
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    img_pil = Image.fromarray(frame)
-    brightness_enhancer = ImageEnhance.Brightness(img_pil)
-    output = brightness_enhancer.enhance(factor)
-    contrast_enhancer = ImageEnhance.Contrast(output)
-    output = contrast_enhancer.enhance(factor)
-    frame = np.asarray(output)
+    # track key press
+    key_state = {
+        'w': keyboard.is_pressed('w'),
+        's': keyboard.is_pressed('s'),
+        'd': keyboard.is_pressed('d'),
+        'a': keyboard.is_pressed('a')
+    }
+    # keys to str
+    keys = f"{''.join([key for key, value in key_state.items() if value])}"
+    # send keys
+    client_socket.sendto(keys.encode('utf-8'), (host_ip, port))
 
     cv2.imshow("RECEIVING VIDEO", frame)
     key = cv2.waitKey(1) & 0xFF

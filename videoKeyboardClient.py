@@ -7,7 +7,9 @@ import zlib
 from PIL import Image, ImageEnhance
 import keyboard
 
-BUFF_SIZE = 65536
+# BUFF_SIZE = 65536
+BUFF_SIZE = 35536
+SML_BUFF_SIZE = 100
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
 host_ip = '100.80.57.27'
@@ -28,6 +30,8 @@ while True:
     npdata = np.frombuffer(decompressed_data, dtype=np.uint8)
     frame = cv2.imdecode(npdata, cv2.IMREAD_COLOR)
     # modify frame here
+    #resize
+    frame = cv2.resize(frame, (1920, 1080))
 
     # track key press
     key_state = {

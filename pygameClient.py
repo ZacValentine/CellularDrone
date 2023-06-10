@@ -22,7 +22,7 @@ BUFF_SIZE = 65536
 SML_BUFF_SIZE = 1000
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
-host_ip = '100.80.57.27'
+host_ip = '100.110.162.27'
 port = 5000
 
 # send msg so server has client addr

@@ -7,10 +7,12 @@ from Motor import Motor
 
 
 
-BUFF_SIZE = 65536
+#BUFF_SIZE = 65536
 #BUFF_SIZE = 35536
-SML_BUFF_SIZE = 1000
-#SML_BUFF_SIZE = 1000
+# may be causing crashes if too
+BUFF_SIZE = 25000
+SML_BUFF_SIZE = 100
+# set datagram mode(udp)
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
 host_ip = '100.110.162.27'

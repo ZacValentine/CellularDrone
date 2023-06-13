@@ -7,6 +7,7 @@ import zlib
 from PIL import Image, ImageEnhance
 import keyboard
 from Motor import Motor
+import time
 
 BUFF_SIZE = 65536
 #BUFF_SIZE = 35536
@@ -24,6 +25,9 @@ leftMotor = Motor(27, 17, 22)
 client_socket.connect((host_ip, port))
 print(f'Connected to server: {host_ip}:{port}')
 
+timeout = 0.1  # timeout in seconds
+last_input_time = time.time()
+
 while True:
     # Receive the packet from the server
     packet = client_socket.recv(SML_BUFF_SIZE)
@@ -32,17 +36,20 @@ while True:
     print(msg)
     
     if len(msg) <= 0:
-        leftMotor.stop()
-        rightMotor.stop()
-    elif msg[0] == 'w':
-        leftMotor.forward()
-        rightMotor.forward()
-    elif msg[0] == 's':
-        leftMotor.backward()
-        rightMotor.backward()
-    elif msg[0] == 'a':
-        leftMotor.stop()
-        rightMotor.forward()
-    elif msg[0] == 'd':
-        leftMotor.forward()
-        rightMotor.stop()
+        if time.time() - last_input_time > timeout:
+            leftMotor.stop()
+            rightMotor.stop()
+    else:
+        last_input_time = time.time()
+        if msg[0] == 'w':
+            leftMotor.forward()
+            rightMotor.forward()
+        elif msg[0] == 's':
+            leftMotor.backward()
+            rightMotor.backward()
+        elif msg[0] == 'a':
+            leftMotor.stop()
+            rightMotor.forward()
+        elif msg[0] == 'd':
+            leftMotor.forward()
+            rightMotor.stop()

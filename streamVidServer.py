@@ -1,6 +1,6 @@
 import socket
+import zlib
 from vidgear.gears import CamGear
-
 
 # Server IP address and port
 host_ip = '100.80.57.27'
@@ -30,11 +30,11 @@ while True:
             # Read frames from the video stream
             frame = stream.read()
 
-            # Convert the frame to bytes
-            frame_bytes = frame.tobytes()
+            # Compress the frame using zlib
+            compressed_frame = zlib.compress(frame)
 
-            # Send the frame size to the client
-            client_socket.sendall(len(frame_bytes).to_bytes(4, byteorder='big'))
+            # Send the compressed frame size to the client
+            client_socket.sendall(len(compressed_frame).to_bytes(4, byteorder='big'))
 
-            # Send the frame to the client
-            client_socket.sendall(frame_bytes)
+            # Send the compressed frame to the client
+            client_socket.sendall(compressed_frame)

@@ -1,6 +1,8 @@
 import socket
+import cv2
+import imutils
 import zlib
-from vidgear.gears import CamGear
+import base64
 
 # Server IP address and port
 host_ip = '100.80.57.27'
@@ -22,19 +24,33 @@ while True:
     print(f'[SERVER] Client connected: {client_address}')
 
     # Start sending video stream to the client
+    vid = cv2.VideoCapture(0)
+    WIDTH = 400
+
     while True:
-        # Open video stream using VidGear
-        stream = CamGear(source=0).start()
+        # Get frame
+        _, frame = vid.read()
+        # Resize frame
+        frame = imutils.resize(frame, width=WIDTH)
 
-        while True:
-            # Read frames from the video stream
-            frame = stream.read()
+        # Compress the frame
+        _, compressed_frame = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+        compressed_data = zlib.compress(compressed_frame)
+        encoded_data = base64.b64encode(compressed_data)
 
-            # Compress the frame using zlib
-            compressed_frame = zlib.compress(frame)
+        # Send the frame size to the client
+        frame_size = len(encoded_data)
+        client_socket.sendall(frame_size.to_bytes(4, byteorder='big'))
 
-            # Send the compressed frame size to the client
-            client_socket.sendall(len(compressed_frame).to_bytes(4, byteorder='big'))
+        # Send the encoded frame to the client
+        client_socket.sendall(encoded_data)
 
-            # Send the compressed frame to the client
-            client_socket.sendall(compressed_frame)
+        # Receive keys
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q'):
+            server_socket.close()
+            break
+
+    # Release the resources
+    vid.release()
+    cv2.destroyAllWindows()

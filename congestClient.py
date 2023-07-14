@@ -4,6 +4,7 @@ import numpy as np
 import zlib
 import base64
 import time
+from PIL import Image, ImageEnhance
 
 # Server IP address and port
 host_ip = '100.110.162.27'
@@ -53,6 +54,16 @@ while True:
             frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
             # Modify frame here
+
+            factor = 1
+            img = Image.fromarray(frame)
+            brightnessEnhancer = ImageEnhance.Brightness(img)
+            output = brightnessEnhancer.enhance(factor)
+            contrastEnhancer = ImageEnhance.Contrast(output)
+            output = contrastEnhancer.enhance(factor)
+            frame = np.asarray(output)
+
+
             # Resize
             frame = cv2.resize(frame, (1920, 1080))
 

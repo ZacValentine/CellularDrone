@@ -6,7 +6,7 @@ import base64
 import time
 
 # Server IP address and port
-host_ip = '100.80.57.27'
+host_ip = '100.110.162.27'
 port = 5000
 
 # Create a TCP socket
@@ -26,7 +26,9 @@ while True:
 
     # Start sending video stream to the client
     vid = cv2.VideoCapture(0)
-    WIDTH = 400
+    #WIDTH = 400 # 5 mbps
+    WIDTH = 250 # 2.5 mbps
+    #WIDTH = 100 # 0.8 mbps
 
     start_time = time.time()
     total_data_sent = 0

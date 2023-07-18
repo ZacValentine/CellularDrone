@@ -31,28 +31,17 @@ while True:
     start_time = time.time()
     total_data_sent = 0
 
-    # Create an H.264 video codec object
-    fourcc = cv2.VideoWriter_fourcc(*'H264')
-    video_writer = cv2.VideoWriter('temp.mp4', fourcc, 20.0, (WIDTH, WIDTH))
-
     while True:
         # Get frame
         _, frame = vid.read()
         # Resize frame
         frame = imutils.resize(frame, width=WIDTH)
 
-        # Write frame to the video file
-        video_writer.write(frame)
-
-        # Read the written frame from the video file
-        video_capture = cv2.VideoCapture('temp.mp4')
-        _, compressed_frame = video_capture.read()
-
-        # Convert the compressed frame to bytes
-        compressed_frame_bytes = compressed_frame.tobytes()
+        # Convert the frame to bytes
+        frame_bytes = frame.tobytes()
 
         # Compress the frame bytes using zlib
-        compressed_data = zlib.compress(compressed_frame_bytes)
+        compressed_data = zlib.compress(frame_bytes)
 
         # Encode the compressed data as base64
         encoded_data = base64.b64encode(compressed_data)
@@ -74,9 +63,6 @@ while True:
         else:
             total_data_sent += frame_size
 
-        # Release the video capture resources
-        video_capture.release()
-
         # Receive keys
         key = cv2.waitKey(1) & 0xFF
         if key == ord('q'):
@@ -86,4 +72,3 @@ while True:
     # Release the resources
     vid.release()
     cv2.destroyAllWindows()
-    video_writer.release()

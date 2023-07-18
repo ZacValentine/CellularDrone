@@ -4,7 +4,6 @@ import numpy as np
 import zlib
 import base64
 import time
-from PIL import Image, ImageEnhance
 
 # Server IP address and port
 host_ip = '100.110.162.27'
@@ -47,6 +46,8 @@ while True:
         try:
             # Decode the frame
             encoded_data = base64.b64decode(frame_bytes)
+
+            # Decompress the frame
             decompressed_data = zlib.decompress(encoded_data)
 
             # Convert the frame from bytes to numpy array
@@ -54,6 +55,7 @@ while True:
             frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
             # Modify frame here
+
             # Resize
             frame = cv2.resize(frame, (1920, 1080))
 

@@ -1,12 +1,7 @@
 import socket
 import keyboard
 
-
-
-
-BUFF_SIZE = 65536
-#BUFF_SIZE = 35536
-SML_BUFF_SIZE = 1000
+BUFF_SIZE = 100
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
 host_ip = '100.80.57.27'
@@ -17,7 +12,7 @@ print('listening at:', socket_address)
 
 while True:
     # get client addr from msg
-    msg, client_addr = server_socket.recvfrom(SML_BUFF_SIZE)
+    msg, client_addr = server_socket.recvfrom(BUFF_SIZE)
     print('got connection from', client_addr)
 
     while True:

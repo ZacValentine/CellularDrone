@@ -14,9 +14,15 @@ socket = context.socket(zmq.PUB)
 socket.bind(f"tcp://{host_ip}:{port}")
 
 vid = cv2.VideoCapture(0)
-WIDTH = 400
+#WIDTH = 400 # 5mbps
+WIDTH = 200 # 
+#WIDTH = 100 # 0.8mbps
 
 print("[SERVER] Server is up. Waiting for client connection...")
+
+# Initialize bandwidth measurement variables
+start_time = time.time()
+total_data_sent = 0
 
 while True:
     # Get frame
@@ -31,6 +37,16 @@ while True:
 
     # Send the encoded frame to the client using ZeroMQ PUB-SUB pattern
     socket.send(encoded_data)
+
+    # Calculate data sent per second
+    elapsed_time = time.time() - start_time
+    if elapsed_time >= 1.0:
+        data_sent_per_second = (total_data_sent * 8) / (elapsed_time * 1000000)  # Convert to Mbps
+        print(f'[SERVER] Data sent per second: {data_sent_per_second:.2f} Mbps')
+        start_time = time.time()
+        total_data_sent = 0
+    else:
+        total_data_sent += len(encoded_data)
 
     # Receive keys
     key = cv2.waitKey(1) & 0xFF

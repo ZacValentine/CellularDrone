@@ -23,7 +23,7 @@ start_time = time.time()
 total_data_sent = 0
 
 # Set the target frame rate (adjust as needed)
-target_frame_rate = 15
+target_frame_rate = 30
 
 while True:
     # Get frame

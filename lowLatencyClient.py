@@ -16,6 +16,10 @@ socket.subscribe(b"")
 
 print(f"[CLIENT] Connected to server: {host_ip}:{port}")
 
+# Initialize bandwidth measurement variables
+start_time = time.time()
+total_data_received = 0
+
 while True:
     try:
         # Receive the frame from the server (publisher) using ZeroMQ PUB-SUB pattern
@@ -28,11 +32,29 @@ while True:
 
         # Modify frame here
 
+        # factor = 1
+        # img = Image.fromarray(frame)
+        # brightnessEnhancer = ImageEnhance.Brightness(img)
+        # output = brightnessEnhancer.enhance(factor)
+        # contrastEnhancer = ImageEnhance.Contrast(output)
+        # output = contrastEnhancer.enhance(factor)
+        # frame = np.asarray(output)
+
         # Resize
         frame = cv2.resize(frame, (1920, 1080))
 
         # Display the frame
         cv2.imshow('Video Stream', frame)
+
+        # Calculate data received per second
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= 1.0:
+            data_received_per_second = (total_data_received * 8) / (elapsed_time * 1000000)  # Convert to Mbps
+            print(f'[CLIENT] Data received per second: {data_received_per_second:.2f} Mbps')
+            start_time = time.time()
+            total_data_received = 0
+        else:
+            total_data_received += len(encoded_data)
 
         # Receive keys
         key = cv2.waitKey(1) & 0xFF

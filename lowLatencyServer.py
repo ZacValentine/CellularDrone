@@ -6,7 +6,7 @@ import base64
 import time
 
 # Server IP address and port
-host_ip = '100.80.57.27'
+host_ip = '100.110.162.27'
 port = 5000
 
 context = zmq.Context()
@@ -14,8 +14,8 @@ socket = context.socket(zmq.PUB)
 socket.bind(f"tcp://{host_ip}:{port}")
 
 vid = cv2.VideoCapture(0)
-#WIDTH = 400 # 5mbps
-WIDTH = 200 #
+#WIDTH = 400 # 4mbps
+WIDTH = 200 # 1.5mbps
 #WIDTH = 100 # 0.8mbps
 
 print("[SERVER] Server is up. Waiting for client connection...")

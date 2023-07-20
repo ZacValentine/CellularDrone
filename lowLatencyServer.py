@@ -15,7 +15,7 @@ socket.bind(f"tcp://{host_ip}:{port}")
 
 vid = cv2.VideoCapture(0)
 #WIDTH = 400 # 5mbps
-WIDTH = 200 # 
+WIDTH = 200 #
 #WIDTH = 100 # 0.8mbps
 
 print("[SERVER] Server is up. Waiting for client connection...")

@@ -21,7 +21,7 @@ start_time = time.time()
 total_data_received = 0
 
 # Initialize frame rate (in frames per second)
-frame_rate = 15  # Fixed frame rate
+frame_rate = 30  # Fixed frame rate
 
 while True:
     try:

@@ -6,7 +6,7 @@ import base64
 import time
 
 # Server IP address and port
-host_ip = '100.80.57.27'
+host_ip = '100.110.162.27'
 port = 5000
 
 context = zmq.Context()

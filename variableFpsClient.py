@@ -20,12 +20,15 @@ print(f"[CLIENT] Connected to server: {host_ip}:{port}")
 start_time = time.time()
 total_data_received = 0
 
-# Set the target frame rate (adjust as needed)
-target_frame_rate = 15
+# Set the initial target frame rate (adjust as needed)
+target_frame_rate = 30
 
 # Initialize buffer to store frames
 buffer_size = 5  # Number of frames to store in the buffer
 frame_buffer = []
+
+# Initialize timer for frame rate control
+last_frame_time = time.time()
 
 while True:
     try:
@@ -39,16 +42,8 @@ while True:
 
         # Modify frame here
 
-        # factor = 1
-        # img = Image.fromarray(frame)
-        # brightnessEnhancer = ImageEnhance.Brightness(img)
-        # output = brightnessEnhancer.enhance(factor)
-        # contrastEnhancer = ImageEnhance.Contrast(output)
-        # output = contrastEnhancer.enhance(factor)
-        # frame = np.asarray(output)
-
         # Resize
-        frame = cv2.resize(frame, (1920, 1080))
+        frame = cv2.resize(frame, (711, 400))
 
         # Add the frame to the buffer
         frame_buffer.append(frame)
@@ -68,11 +63,11 @@ while True:
         total_data_received += len(encoded_data)
 
         # Calculate the actual frame display rate based on elapsed time
-        actual_frame_rate = len(frame_buffer) / elapsed_time
-        time.sleep(max(0, 1.0 / target_frame_rate - elapsed_time))  # Sleep to achieve target frame rate
+        actual_frame_rate = len(frame_buffer) / (time.time() - last_frame_time)
 
-        # Display the most recent frame from the buffer
-        if frame_buffer:
+        # Display the most recent frame from the buffer if it's time for the next frame
+        if frame_buffer and actual_frame_rate >= target_frame_rate:
+            last_frame_time = time.time()
             frame = frame_buffer.pop(0)
             cv2.imshow('Video Stream', frame)
 

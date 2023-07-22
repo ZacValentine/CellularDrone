@@ -8,13 +8,11 @@ from PIL import Image, ImageEnhance
 import keyboard
 from Motor import Motor
 
-BUFF_SIZE = 65536
-#BUFF_SIZE = 35536
-#SML_BUFF_SIZE = 100
-SML_BUFF_SIZE = 1000
+BUFF_SIZE = 100
+
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFF_SIZE)
-host_ip = '100.80.57.27'
+host_ip = '100.88.162.36'
 port = 5001
 
 rightMotor = Motor(25, 23, 24)
@@ -45,5 +43,3 @@ while True:
     elif msg[0] == 'd':
         leftMotor.forward()
         rightMotor.stop()
-
-

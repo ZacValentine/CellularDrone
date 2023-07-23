@@ -1,3 +1,6 @@
+
+# ZMQ/LOWER LATENCY - NO FPS CONTROL - LATENCY INCREASES WHEN UPLOAD IS LOWER THAN MBPS(GETS BACKED UP)
+
 import zmq
 import cv2
 import imutils
@@ -14,7 +17,12 @@ socket = context.socket(zmq.PUB)
 socket.bind(f"tcp://{host_ip}:{port}")
 
 vid = cv2.VideoCapture(0)
-WIDTH = 200
+vid.set(cv2.CAP_PROP_FPS, 30)
+
+
+#WIDTH = 400 # 4.5mbps CONFIRMED
+WIDTH = 200 # 1.7mbps CONFIRMED
+#WIDTH = 100 # 0.7mbps CONFIRMED
 
 print("[SERVER] Server is up. Waiting for client connection...")
 
@@ -22,8 +30,6 @@ print("[SERVER] Server is up. Waiting for client connection...")
 start_time = time.time()
 total_data_sent = 0
 
-# Set the target frame rate (adjust as needed)
-target_frame_rate = 30
 
 while True:
     # Get frame
@@ -36,6 +42,9 @@ while True:
     compressed_data = zlib.compress(compressed_frame)
     encoded_data = base64.b64encode(compressed_data)
 
+    # Send the encoded frame to the client using ZeroMQ PUB-SUB pattern
+    socket.send(encoded_data)
+
     # Calculate data sent per second
     elapsed_time = time.time() - start_time
     if elapsed_time >= 1.0:
@@ -43,12 +52,8 @@ while True:
         print(f'[SERVER] Data sent per second: {data_sent_per_second:.2f} Mbps')
         start_time = time.time()
         total_data_sent = 0
-
-    # Limit the frame rate to match the target_frame_rate
-    if time.time() - start_time >= 1.0 / target_frame_rate:
-        socket.send(encoded_data)
+    else:
         total_data_sent += len(encoded_data)
-        start_time = time.time()
 
     # Receive keys
     key = cv2.waitKey(1) & 0xFF
@@ -58,3 +63,8 @@ while True:
 # Release the resources
 vid.release()
 cv2.destroyAllWindows()
+
+
+
+
+

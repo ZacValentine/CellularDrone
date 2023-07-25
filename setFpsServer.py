@@ -1,5 +1,5 @@
 
-# ZMQ/LOWER LATENCY - NO FPS CONTROL - LATENCY INCREASES WHEN UPLOAD IS LOWER THAN MBPS(GETS BACKED UP)
+# ZMQ/LOWER LATENCY - NO FPS CONTROL - LATENCY INCREASES WHEN UPLOAD IS LOWER THAN MBPS(GETS BACKED UP) - SEEMS TO BE FRAME SKIPPING(10000 WIDTH, ON PC, LOW FPS BUT NO LATENCY INCREASE)
 
 import zmq
 import cv2
@@ -16,9 +16,10 @@ context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind(f"tcp://{host_ip}:{port}")
 
-vid = cv2.VideoCapture(0)
-vid.set(cv2.CAP_PROP_FPS, 30)
+fps = 30
 
+vid = cv2.VideoCapture(0)
+vid.set(cv2.CAP_PROP_FPS, fps)
 
 #WIDTH = 400 # 4.5mbps CONFIRMED
 WIDTH = 200 # 1.7mbps CONFIRMED
@@ -29,6 +30,9 @@ print("[SERVER] Server is up. Waiting for client connection...")
 # Initialize bandwidth measurement variables
 start_time = time.time()
 total_data_sent = 0
+
+desiredUpload = 1
+
 
 
 while True:
@@ -54,6 +58,14 @@ while True:
         total_data_sent = 0
     else:
         total_data_sent += len(encoded_data)
+
+
+
+
+
+
+
+
 
     # Receive keys
     key = cv2.waitKey(1) & 0xFF

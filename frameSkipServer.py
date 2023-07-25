@@ -1,3 +1,6 @@
+
+
+
 import zmq
 import cv2
 import imutils
@@ -13,17 +16,14 @@ context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind(f"tcp://{host_ip}:{port}")
 
-# Desired frame rate (FPS) to be sent to the client
-desired_fps = 30
-frame_interval = 1.0 / desired_fps
+fps = 30
 
 vid = cv2.VideoCapture(0)
-vid.set(cv2.CAP_PROP_FPS, desired_fps)
+vid.set(cv2.CAP_PROP_FPS, fps)
 
-WIDTH = 3000
-# WIDTH = 400 # 4.5mbps CONFIRMED
-#WIDTH = 200  # 1.7mbps CONFIRMED
-# WIDTH = 100 # 0.7mbps CONFIRMED
+WIDTH = 400 # 4.5mbps CONFIRMED
+#WIDTH = 200 # 1.7mbps CONFIRMED
+#WIDTH = 100 # 0.7mbps CONFIRMED
 
 print("[SERVER] Server is up. Waiting for client connection...")
 
@@ -31,27 +31,9 @@ print("[SERVER] Server is up. Waiting for client connection...")
 start_time = time.time()
 total_data_sent = 0
 
-# Custom FPS class
-class FPS:
-    def __init__(self):
-        self._start_time = None
-        self._num_frames = 0
-
-    def start(self):
-        self._start_time = time.time()
-        self._num_frames = 0
-        return self
-
-    def update(self):
-        self._num_frames += 1
-
-    def fps(self):
-        elapsed_time = time.time() - self._start_time
-        if elapsed_time > 0:
-            return self._num_frames / elapsed_time
-        else:
-            return 0
-
+desired_upload = 4
+frame_count = 0
+frame_skip_interval = 1
 
 while True:
     # Get frame
@@ -65,19 +47,45 @@ while True:
     encoded_data = base64.b64encode(compressed_data)
 
     # Calculate data sent per second
-    elapsed_time = time.time() - start_time
-    if elapsed_time >= 1.0:
-        data_sent_per_second = (total_data_sent * 8) / (elapsed_time * 1000000)  # Convert to Mbps
-        print(f'[SERVER] Data sent per second: {data_sent_per_second:.2f} Mbps')
-        start_time = time.time()
-        total_data_sent = 0
-    else:
-        total_data_sent += len(encoded_data)
 
-    # Send the encoded frame to the client using ZeroMQ PUB-SUB pattern
-    if elapsed_time >= frame_interval:
+    if frame_count % frame_skip_interval == 0:
+        # Send the encoded frame to the client using ZeroMQ PUB-SUB pattern
         socket.send(encoded_data)
-        start_time = time.time()
+
+        # Calculate data sent per second
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= 1.0:
+            data_sent_per_second = (total_data_sent * 8) / (elapsed_time * 1000000)  # Convert to Mbps
+            print(f'[SERVER] Data sent per second: {data_sent_per_second:.2f} Mbps')
+            start_time = time.time()
+            total_data_sent = 0
+
+            data_sent_difference = abs(data_sent_per_second - desired_upload)
+            lowerFPS_data_sent_difference = abs(1 / (frame_skip_interval + 1) * data_sent_per_second - desired_upload)
+            higherFPS_data_sent_difference = abs(1 / max(1, (frame_skip_interval - 1)) * data_sent_per_second - desired_upload)
+
+            if data_sent_per_second > desired_upload and lowerFPS_data_sent_difference < data_sent_difference:
+                frame_skip_interval += 1
+            elif data_sent_per_second < desired_upload and frame_skip_interval > 1 and higherFPS_data_sent_difference < data_sent_difference:
+                frame_skip_interval -= 1
+            else:
+                frame_skip_interval += 0
+
+            print("[SERVER] Frame skip interval:", frame_skip_interval)
+            print("[SERVER] FPS:", fps / frame_skip_interval)
+            print("")
+
+        else:
+            total_data_sent += len(encoded_data)
+
+    frame_count += 1
+
+
+
+
+
+    if frame_count >= frame_skip_interval:
+        frame_count = 0
 
     # Receive keys
     key = cv2.waitKey(1) & 0xFF

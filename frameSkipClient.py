@@ -6,6 +6,9 @@ import base64
 import time
 import datetime
 
+
+
+
 # Server IP address and port
 host_ip = '100.80.57.27'
 port = 5000
@@ -21,30 +24,9 @@ print(f"[CLIENT] Connected to server: {host_ip}:{port}")
 start_time = datetime.datetime.now()
 total_data_received = 0
 
-# Custom FPS class
-class FPS:
-    def __init__(self):
-        self._start_time = None
-        self._num_frames = 0
-
-    def start(self):
-        self._start_time = time.time()
-        self._num_frames = 0
-        return self
-
-    def update(self):
-        self._num_frames += 1
-
-    def fps(self):
-        elapsed_time = time.time() - self._start_time
-        if elapsed_time > 0:
-            return self._num_frames / elapsed_time
-        else:
-            return 0
-
-# Desired frame rate (FPS) to be displayed on the client side
-desired_fps = 30
-frame_interval = 1.0 / desired_fps
+fps_start_time = time.time()
+frames = 0
+fps_text = "0"
 
 while True:
     try:
@@ -61,15 +43,14 @@ while True:
         # Resize
         frame = cv2.resize(frame, (1920, 1080))
 
-        # Update FPS counter
-        if 'fps_counter' not in locals():
-            fps_counter = FPS().start()
-        else:
-            fps_counter.update()
-
-        # Display the FPS on the frame
-        fps_text = f"FPS: {fps_counter.fps():.2f}"
+        frames += 1
+        elapsed_time = time.time() - fps_start_time
+        if elapsed_time >= 1.0:
+            fps_text = str(frames)
+            frames = 0
+            fps_start_time = time.time()
         cv2.putText(frame, fps_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
 
         # Display the frame
         cv2.imshow('Video Stream', frame)
@@ -83,12 +64,6 @@ while True:
             total_data_received = 0
         else:
             total_data_received += len(encoded_data)
-
-        # Skip frames to maintain desired frame rate
-        while elapsed_time.total_seconds() < frame_interval:
-            encoded_data = socket.recv()
-            total_data_received += len(encoded_data)
-            elapsed_time = datetime.datetime.now() - start_time
 
         # Receive keys
         key = cv2.waitKey(1) & 0xFF

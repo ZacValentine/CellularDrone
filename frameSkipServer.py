@@ -31,7 +31,7 @@ print("[SERVER] Server is up. Waiting for client connection...")
 start_time = time.time()
 total_data_sent = 0
 
-desired_upload = 4
+desired_upload = 2
 frame_count = 0
 frame_skip_interval = 1
 
@@ -61,15 +61,19 @@ while True:
             total_data_sent = 0
 
             data_sent_difference = abs(data_sent_per_second - desired_upload)
-            lowerFPS_data_sent_difference = abs(1 / (frame_skip_interval + 1) * data_sent_per_second - desired_upload)
-            higherFPS_data_sent_difference = abs(1 / max(1, (frame_skip_interval - 1)) * data_sent_per_second - desired_upload)
+            increaseIntervel_data_sent_difference = abs(1 / (frame_skip_interval + 1) * data_sent_per_second - desired_upload)
+            decreaseInterval_data_sent_difference = abs(1 / max(1, (frame_skip_interval - 1)) * data_sent_per_second - desired_upload)
 
-            if data_sent_per_second > desired_upload and lowerFPS_data_sent_difference < data_sent_difference:
+            print(data_sent_difference, increaseIntervel_data_sent_difference, decreaseInterval_data_sent_difference)
+
+
+            if data_sent_per_second > desired_upload and increaseIntervel_data_sent_difference < data_sent_difference:
                 frame_skip_interval += 1
-            elif data_sent_per_second < desired_upload and frame_skip_interval > 1 and higherFPS_data_sent_difference < data_sent_difference:
+            elif data_sent_per_second < desired_upload and frame_skip_interval > 1 and decreaseInterval_data_sent_difference < data_sent_difference:
                 frame_skip_interval -= 1
             else:
                 frame_skip_interval += 0
+
 
             print("[SERVER] Frame skip interval:", frame_skip_interval)
             print("[SERVER] FPS:", fps / frame_skip_interval)

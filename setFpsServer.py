@@ -8,8 +8,10 @@ import zlib
 import base64
 import time
 
+from sensors import temp_sensor
+
 # Server IP address and port
-host_ip = '100.80.57.27'
+host_ip = '100.110.162.27'
 port = 5000
 
 context = zmq.Context()
@@ -21,6 +23,7 @@ fps = 30
 vid = cv2.VideoCapture(0)
 vid.set(cv2.CAP_PROP_FPS, fps)
 
+
 #WIDTH = 400 # 4.5mbps CONFIRMED
 WIDTH = 200 # 1.7mbps CONFIRMED
 #WIDTH = 100 # 0.7mbps CONFIRMED
@@ -31,15 +34,16 @@ print("[SERVER] Server is up. Waiting for client connection...")
 start_time = time.time()
 total_data_sent = 0
 
-desiredUpload = 1
-
-
+temp_sensor = temp_sensor()
 
 while True:
     # Get frame
     _, frame = vid.read()
     # Resize frame
     frame = imutils.resize(frame, width=WIDTH)
+    
+    #put sensor data
+    cv2.putText(frame, "TEMP: " + str(temp_sensor.getTemp()), (WIDTH - 80, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     # Compress the frame
     _, compressed_frame = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
@@ -60,13 +64,6 @@ while True:
         total_data_sent += len(encoded_data)
 
 
-
-
-
-
-
-
-
     # Receive keys
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
@@ -75,8 +72,3 @@ while True:
 # Release the resources
 vid.release()
 cv2.destroyAllWindows()
-
-
-
-
-

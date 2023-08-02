@@ -8,9 +8,8 @@ import datetime
 
 
 
-
 # Server IP address and port
-host_ip = '100.80.57.27'
+host_ip = '100.110.162.27'
 port = 5000
 
 context = zmq.Context()
@@ -38,19 +37,19 @@ while True:
         frame = np.frombuffer(decompressed_data, dtype=np.uint8)
         frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
 
-        # Modify frame here
-
         # Resize
         frame = cv2.resize(frame, (1920, 1080))
+
+        # Modify frame here
 
         frames += 1
         elapsed_time = time.time() - fps_start_time
         if elapsed_time >= 1.0:
-            fps_text = str(frames)
+            fps_text = "FPS: " + str(frames)
+
             frames = 0
             fps_start_time = time.time()
         cv2.putText(frame, fps_text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
 
         # Display the frame
         cv2.imshow('Video Stream', frame)

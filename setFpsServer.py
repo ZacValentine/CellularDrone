@@ -7,6 +7,8 @@ import imutils
 import zlib
 import base64
 import time
+import datetime
+from sys import argv
 
 from sensors import temp_sensor
 
@@ -18,15 +20,21 @@ context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind(f"tcp://{host_ip}:{port}")
 
-fps = 30
-
+if len(argv) > 1:
+	fps = int(argv[1])
+	WIDTH = int(argv[2])
+else:
+	fps = 15
+	WIDTH = 200 # 1.7 mbps CONFIRMED
 vid = cv2.VideoCapture(0)
 vid.set(cv2.CAP_PROP_FPS, fps)
 
-
+#WIDTH = 800
 #WIDTH = 400 # 4.5mbps CONFIRMED
-WIDTH = 200 # 1.7mbps CONFIRMED
+#WIDTH = 200 # 1.7mbps CONFIRMED
 #WIDTH = 100 # 0.7mbps CONFIRMED
+
+HEIGHT = int(WIDTH * 0.5625)
 
 print("[SERVER] Server is up. Waiting for client connection...")
 
@@ -40,10 +48,23 @@ while True:
     # Get frame
     _, frame = vid.read()
     # Resize frame
-    frame = imutils.resize(frame, width=WIDTH)
+    frame = imutils.resize(frame, width=WIDTH, height=HEIGHT)
     
+    
+    
+    # resizing for UI placement
+    #MAY CAUSE SLOW DOWN
+    #frame = cv2.resize(frame, (1920, 1080))
+    
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+    cv2.putText(frame, current_time, (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
     #put sensor data
     cv2.putText(frame, "TEMP: " + str(temp_sensor.getTemp()), (WIDTH - 80, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    
+    #MAY CAUSE SLOW DOWN
+    #frame = cv2.resize(frame, (400, 400))
+    
 
     # Compress the frame
     _, compressed_frame = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])

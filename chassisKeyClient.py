@@ -40,4 +40,3 @@ while True:
         servoMotor.backward()
     else:
         servoMotor.stop()
-

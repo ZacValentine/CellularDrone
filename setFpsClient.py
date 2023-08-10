@@ -40,7 +40,9 @@ while True:
         # Resize
         frame = cv2.resize(frame, (1920, 1080))
 
-        # Modify frame here
+        # Add timestamp on the frame
+        current_time = datetime.datetime.now().strftime("%H:%M:%S")
+        cv2.putText(frame, current_time, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         frames += 1
         elapsed_time = time.time() - fps_start_time
